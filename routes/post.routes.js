@@ -1,22 +1,23 @@
 const express = require('express')
 const router = express.Router()
 const postControllers = require('../controllers/post.controller')
+const auth = require('../middlewares/auth')
 
 // Post routes:
 
 // create a post
-router.post('/', postControllers.createPost)
+router.post('/', auth, postControllers.createPost)
 
 // get all posts
-router.get('/', postControllers.getPosts)
+router.get('/', auth, postControllers.getPosts)
 
 // get a post
-router.get('/:id', postControllers.getPost)
+router.get('/:id', auth, postControllers.getPost)
 
 // update a post
-router.put('/:id', postControllers.updatePost) 
+router.put('/:id', auth, postControllers.updatePost) 
 
 // delete a post
-router.delete('/:id', postControllers.deletePost) 
+router.delete('/:id', auth,  postControllers.deletePost) 
 
 module.exports = router 
