@@ -1,4 +1,5 @@
 const Post = require('../models/post.model')
+const Comment = require('../models/comment.model')
 
 // Post Controllers:
 
@@ -75,12 +76,58 @@ const deletePost = async (req, res, next) => {
     try {
         const { id } = req.params
 
-        const post = await Post.findOneAndDelete({_id: id, owner: req.user.userId})
+        const post = await Post.findOne({ _id: id, owner: req.user.userId })
         if (!post) {
             return res.status(400).json({ message: 'No post found' })
         }
 
+        await post.deleteOne()
+
         res.json(post)
+    } catch (err) {
+        next(err)
+    }
+}
+
+// create comment for post
+const createComment = async (req, res, next) => {
+    try {
+        const { postId } = req.params
+        const { userId } = req.user
+
+        const post = await Post.findById(postId)
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' })
+        }
+
+        const { content } = req.body
+        if (!content) {
+            return res.status(400).json({ message: 'Comment content required' })
+        }
+
+        const comment = new Comment({ content, owner: userId, post: postId })
+        comment.save()
+
+        res.json(comment)
+
+    } catch (err) {
+        next(err)
+    }
+}
+
+// get comments from post
+const getComments = async (req, res, next) => {
+    try {
+        const { postId } = req.params
+
+        const post = await Post.findById(postId)
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' })
+        }
+
+        const comments = await Comment.find({ post: postId }).populate('owner', 'email').populate('post', 'title content')
+
+        res.json(comments)
     } catch (err) {
         next(err)
     }
@@ -91,5 +138,7 @@ module.exports = {
     getPosts,
     getPost,
     updatePost,
-    deletePost
+    deletePost,
+    createComment,
+    getComments
 }

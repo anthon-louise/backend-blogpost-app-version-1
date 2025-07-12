@@ -18,6 +18,12 @@ router.get('/:id', auth, postControllers.getPost)
 router.put('/:id', auth, postControllers.updatePost) 
 
 // delete a post
-router.delete('/:id', auth,  postControllers.deletePost) 
+router.delete('/:id', auth,  postControllers.deletePost)
+
+// comment a post
+router.post('/:postId/comment', auth, postControllers.createComment)
+
+// get comments from a post
+router.get('/:postId/comment', auth, postControllers.getComments)
 
 module.exports = router 
