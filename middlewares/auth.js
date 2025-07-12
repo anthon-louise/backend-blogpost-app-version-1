@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 
+// Auth middleware to protect private routes
 const auth = async (req, res, next) => {
     const token = req.cookies.token
     if (!token) {

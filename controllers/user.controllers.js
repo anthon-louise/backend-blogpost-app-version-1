@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user.model')
+const UserSetting = require('../models/userSettings.model')
 
 // Controllers:
 
@@ -22,6 +23,9 @@ const signupUser = async (req, res, next) => {
 
         const user = new User({ email, password: hashPassword })
         user.save()
+
+        const userSetting = new UserSetting({ owner: user._id })
+        userSetting.save()
 
         res.json({ message: 'Signup successfully!' })
     } catch (err) {
