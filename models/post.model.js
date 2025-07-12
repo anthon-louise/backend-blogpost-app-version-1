@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Comment = require('../models/comment.model')
+const Like = require('../models/like.model')
 
 // Post schema
 const postSchema = new mongoose.Schema({
@@ -21,6 +22,7 @@ const postSchema = new mongoose.Schema({
 postSchema.pre('deleteOne', {document: true, query: false}, async function(next) {
     const postId = this._id
     await Comment.deleteMany({post: postId})
+    await Like.deleteMany({post: postId})
     next()
 })
 
