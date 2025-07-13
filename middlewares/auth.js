@@ -11,6 +11,7 @@ const auth = async (req, res, next) => {
             token,
             process.env.SECRET
         )
+        console.log(decoded)
         req.user=decoded
         next()
     } catch (err) {
