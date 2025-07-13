@@ -1,30 +1,56 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const Joi = require('joi')
 const User = require('../models/user.model')
 const UserSetting = require('../models/userSettings.model')
+
+
+// Joi validation:
+
+// user signup validation
+const userSignupSchema = Joi.object({
+    email: Joi.string().trim().lowercase().email().required(),
+    password: Joi.string().min(8).required()
+})
+
+// admin signup validation
+const adminSignupSchema = Joi.object({
+    email: Joi.string().trim().lowercase().email().required(),
+    password: Joi.string().min(8).required(),
+    adminpass: Joi.string().required()
+})
+
+// login schema validation
+const loginSchema = Joi.object({
+    email: Joi.string().trim().lowercase().email().required(),
+    password: Joi.string().required()
+})
+
 
 // Controllers:
 
 // signup a user
 const signupUser = async (req, res, next) => {
     try {
-        const { email, password } = req.body
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password required' })
+        const { error, value } = userSignupSchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message })
         }
+
+        const { email, password } = value
 
         const existingEmail = await User.findOne({ email })
         if (existingEmail) {
-            return res.status(400).json({ message: 'Email already exists' })
+            return res.status(409).json({ message: 'Email already exists' })
         }
 
         const hashPassword = await bcrypt.hash(password, 10)
 
         const user = new User({ email, password: hashPassword, role: 'user' })
-        user.save()
+        await user.save()
 
         const userSetting = new UserSetting({ owner: user._id })
-        userSetting.save()
+        await userSetting.save()
 
         res.json({ message: 'Signup successfully!' })
     } catch (err) {
@@ -32,22 +58,19 @@ const signupUser = async (req, res, next) => {
     }
 }
 
-
 // login as a user
 const loginUser = async (req, res, next) => {
     try {
-        const { email, password } = req.body
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password required' })
+        const { error, value } = loginSchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message })
         }
+
+        const { email, password } = value
 
         const user = await User.findOne({ email })
-        if (!user) {
-            return res.status(400).json({ message: 'User does not exist' })
-        }
-
-        if (user.role === 'admin') {
-            return res.status(400).json({ message: 'Must be a user' })
+        if (!user || user.role !== 'user') {
+            return res.status(400).json({ message: 'Invalid user' })
         }
 
         const isValid = await bcrypt.compare(password, user.password)
@@ -65,10 +88,10 @@ const loginUser = async (req, res, next) => {
             httpOnly: true,
             secure: false,
             sameSite: 'strict',
-            maxAge: 360000
+            maxAge: 3600000
         })
 
-        res.json({ message: 'Login successfully' })
+        res.status(201).json({ message: 'Login successfully' })
     } catch (err) {
         next(err)
     }
@@ -77,11 +100,16 @@ const loginUser = async (req, res, next) => {
 // signup as an admin
 const signupAdmin = async (req, res, next) => {
     try {
-        const { email, password, adminpass } = req.body
+        const {error, value} = adminSignupSchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({message: error.details[0].message})
+        }
+
+        const {email, password, adminpass} = value
+
         if (adminpass !== process.env.ADMINPASS) {
             return res.status(400).json({ message: 'Invalid Admin Password' })
         }
-
 
         const existingEmail = await User.findOne({ email })
         if (existingEmail) {
@@ -91,17 +119,23 @@ const signupAdmin = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const admin = new User({ email, password: hashedPassword, role: 'admin' })
-        admin.save()
+        await admin.save()
 
-        res.json({ message: 'Signup as admin success' })
+        res.status(201).json({ message: 'Signup as admin success' })
     } catch (err) {
         next(err)
     }
 }
 
+// login as an admin
 const loginAdmin = async (req, res, next) => {
     try {
-        const { email, password } = req.body
+        const {error, value} = loginSchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({message: error.details[0].message})
+        }
+
+        const {email, password} = value
 
         const user = await User.findOne({ email })
         if (!user) {
@@ -123,10 +157,10 @@ const loginAdmin = async (req, res, next) => {
             httpOnly: true,
             sameSite: 'strict',
             secure: false,
-            maxAge: 360000
+            maxAge: 3600000
         })
 
-        res.json({ message: 'Login success' })
+        res.status(200).json({ message: 'Login success' })
     } catch (err) {
         next(err)
     }
