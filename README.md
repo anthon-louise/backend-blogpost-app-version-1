@@ -97,4 +97,4 @@ I’m actively learning and always happy for feedback! If you find any bugs 🐛
 ---
 # Thank you for visiting 
 
-<img src='[https://tenor.com/view/thanks-bro-gif-1982361524334340372](https://media.tenor.com/G4LDTapZqRQAAAAi/thanks-bro.gif)' align='center'>
+<img src='https://media.tenor.com/G4LDTapZqRQAAAAi/thanks-bro.gif' align='center'>
