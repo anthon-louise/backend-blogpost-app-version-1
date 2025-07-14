@@ -99,4 +99,4 @@ I’m actively learning and always happy for feedback! If you find any bugs 🐛
 ---
 # Thank you for visiting 
 
-<img src='https://tenor.com/cwBoQtht0Ei.gif' alt='Thank you GIF'>
+<div class="tenor-gif-embed" data-postid="1982361524334340372" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/thanks-bro-gif-1982361524334340372">Thanks Bro Sticker</a>from <a href="https://tenor.com/search/thanks+bro-stickers">Thanks Bro Stickers</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
