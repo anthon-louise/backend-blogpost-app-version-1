@@ -1,24 +1,32 @@
+const Joi = require('joi')
 const Comment = require('../models/comment.model')
+
+// Comment body schema validation
+const commentBodySchema = Joi.object({
+    content: Joi.string().trim().min(1).required()
+})
 
 // Comment controllers:
 
 // update comment
 const updateComment = async (req, res, next) => {
     try {
-        const { commentId } = req.params
+        const { id } = req.params
         const { userId } = req.user
 
-        const { content } = req.body
-        if (!content) {
-            return res.status(400).json({ message: 'Comment content required' })
+        const {error, value} = commentBodySchema.validate(req.body)
+        if (error) {
+            res.status(400).json({message: error.details[0].message})
         }
 
+        const {content} = value
+
         const comment = await Comment.findOneAndUpdate(
-            { _id: commentId, owner: userId },
+            { _id: id, owner: userId },
             { content },
             { new: true, runValidators: true }
         )
-        if (!content) {
+        if (!comment) {
             return res.status(404).json({ message: 'Comment not found' })
         }
 
@@ -31,10 +39,10 @@ const updateComment = async (req, res, next) => {
 // delete comment
 const deleteComment = async (req, res, next) => {
     try {
-        const {commentId} = req.params
+        const {id} = req.params
         const {userId} = req.user
 
-        const comment = await Comment.findOneAndDelete({_id: commentId, owner: userId})
+        const comment = await Comment.findOneAndDelete({_id: id, owner: userId})
         if (!comment) {
             return res.status(404).json({ message: 'Comment not found' })
         }

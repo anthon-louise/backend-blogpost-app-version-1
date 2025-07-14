@@ -15,18 +15,18 @@ router.post('/', auth, isUser,  postControllers.createPost)
 router.get('/', auth, isUser, postControllers.getPosts)
 
 // get a post
-router.get('/:id', auth, validateParams(idParamSchema), isUser, postControllers.getPost)
+router.get('/:id', auth, validateParams, isUser, postControllers.getPost)
 
 // update a post
-router.put('/:id', auth, validateParams(idParamSchema), isUser, postControllers.updatePost) 
+router.put('/:id', auth, validateParams, isUser, postControllers.updatePost) 
 
 // delete a post
-router.delete('/:id', auth, validateParams(idParamSchema), isUser,  postControllers.deletePost)
+router.delete('/:id', auth, validateParams, isUser,  postControllers.deletePost)
 
 // comment a post
-router.post('/:id/comment', auth, validateParams(idParamSchema), isUser, postControllers.createComment)
+router.post('/:id/comment', auth, validateParams, isUser, postControllers.createComment)
 
 // get comments from a post
-router.get('/:id/comment', auth, validateParams(idParamSchema), isUser, postControllers.getComments)
+router.get('/:id/comment', auth, validateParams, isUser, postControllers.getComments)
 
 module.exports = router 
