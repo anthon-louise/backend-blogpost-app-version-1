@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://via.placeholder.com/800x200?text=✨+Blog+App+Backend+API+✨" alt="Banner">
-</p>
-
 <h1 align="center">✨ Blog App (Backend) 📝</h1>
 
 <p align="center">
@@ -95,5 +91,12 @@ I’m actively learning and always happy for feedback! If you find any bugs 🐛
 
 ---
 
-## 📂 Folder Structure
+## 🤝 Collaboration
 
+💌 I'm happy to network or collaborate!  
+📧 Email: **[anthonlouisenoynay123@gmail.com](mailto:anthonlouisenoynay123@gmail.com)**
+
+---
+### Thank you for visiting 
+
+https://tenor.com/cwBoQtht0Ei.gif
