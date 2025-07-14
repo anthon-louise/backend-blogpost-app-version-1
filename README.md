@@ -2,8 +2,6 @@
 
 <p align="center">
   A Node.js / Express REST API for blogging: posts, likes, comments, user management, and admin roles.  
-  <br>
-  <strong>🚀 Learn. Build. Collaborate.</strong>
 </p>
 
 ---
