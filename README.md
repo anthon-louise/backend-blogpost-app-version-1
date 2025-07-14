@@ -97,6 +97,6 @@ I’m actively learning and always happy for feedback! If you find any bugs 🐛
 📧 Email: **[anthonlouisenoynay123@gmail.com](mailto:anthonlouisenoynay123@gmail.com)**
 
 ---
-### Thank you for visiting 
+# Thank you for visiting 
 
-https://tenor.com/cwBoQtht0Ei.gif
+<img src='https://tenor.com/cwBoQtht0Ei.gif' alt='Thank you GIF'>
