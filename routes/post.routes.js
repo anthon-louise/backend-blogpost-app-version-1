@@ -1,8 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const postControllers = require('../controllers/post.controller')
+const {idParamSchema} = require('../controllers/post.controller')
 const auth = require('../middlewares/auth')
 const isUser = require('../middlewares/isUser')
+const validateParams = require('../middlewares/validatesParam')
 
 // Post routes:
 
@@ -13,18 +15,18 @@ router.post('/', auth, isUser,  postControllers.createPost)
 router.get('/', auth, isUser, postControllers.getPosts)
 
 // get a post
-router.get('/:id', auth, isUser, postControllers.getPost)
+router.get('/:id', auth, validateParams(idParamSchema), isUser, postControllers.getPost)
 
 // update a post
-router.put('/:id', auth, isUser, postControllers.updatePost) 
+router.put('/:id', auth, validateParams(idParamSchema), isUser, postControllers.updatePost) 
 
 // delete a post
-router.delete('/:id', auth, isUser,  postControllers.deletePost)
+router.delete('/:id', auth, validateParams(idParamSchema), isUser,  postControllers.deletePost)
 
 // comment a post
-router.post('/:postId/comment', auth, isUser, postControllers.createComment)
+router.post('/:id/comment', auth, validateParams(idParamSchema), isUser, postControllers.createComment)
 
 // get comments from a post
-router.get('/:postId/comment', auth, isUser, postControllers.getComments)
+router.get('/:id/comment', auth, validateParams(idParamSchema), isUser, postControllers.getComments)
 
 module.exports = router 

@@ -1,20 +1,43 @@
+const Joi = require('joi')
 const Post = require('../models/post.model')
 const Comment = require('../models/comment.model')
+const User = require('../models/user.model')
+
+// Joi validation:
+
+// post body schema validation
+const postBodySchema = Joi.object({
+    title: Joi.string().trim().min(3).max(100).required(),
+    content: Joi.string().trim().min(1).required()
+})
+
+// comment body schema validation
+const commentBodySchema = Joi.object({
+    content: Joi.string().trim().min(1).required()
+})
+
+// Id param schema validation
+const idParamSchema = Joi.object({
+    id: Joi.string().length(24).hex().required()
+})
+
 
 // Post Controllers:
 
 // create a user's post
 const createPost = async (req, res, next) => {
     try {
-        const { title, content } = req.body
-        if (!title || !content) {
-            return res.status(400).json({ message: 'Title and content required' })
+        const { error, value } = postBodySchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message })
         }
 
-        const post = new Post({ title, content, owner: req.user.userId })
-        post.save()
+        const { title, content } = value
 
-        res.json(post)
+        const post = new Post({ title, content, owner: req.user.userId })
+        await post.save()
+
+        res.status(201).json(post)
     } catch (err) {
         next(err)
     }
@@ -23,8 +46,10 @@ const createPost = async (req, res, next) => {
 // Get all user's posts
 const getPosts = async (req, res, next) => {
     try {
-        const posts = await Post.find({ owner: req.user.userId })
-        res.json(posts)
+        const {userId} = req.user
+
+        const posts = await Post.find({ owner: userId }).select('title content')
+        res.status(200).json(posts)
     } catch (err) {
         next(err)
     }
@@ -35,7 +60,7 @@ const getPost = async (req, res, next) => {
     try {
         const { id } = req.params
 
-        const post = await Post.findOne({ _id: id, owner: req.user.userId })
+        const post = await Post.findOne({ _id: id, owner: req.user.userId }).select('title content')
         if (!post) {
             return res.status(400).json({ message: 'No post found' })
         }
@@ -50,14 +75,17 @@ const getPost = async (req, res, next) => {
 const updatePost = async (req, res, next) => {
     try {
         const { id } = req.params
+        const { userId } = req.user
 
-        const { title, content } = req.body
-        if (!title || !content) {
-            return res.status(400).json({ message: 'Title and content required' })
+        const {error, value} = postBodySchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({message: error.details[0].message})
         }
 
+        const {title, content} = value
+
         const post = await Post.findOneAndUpdate(
-            { _id: id, owner: req.user.userId },
+            { _id: id, owner: userId },
             { title, content },
             { new: true, runValidators: true }
         )
@@ -65,7 +93,7 @@ const updatePost = async (req, res, next) => {
             return res.status(400).json({ message: 'No post found' })
         }
 
-        res.json(post)
+        res.status(200).json({post})
     } catch (err) {
         next(err)
     }
@@ -75,8 +103,9 @@ const updatePost = async (req, res, next) => {
 const deletePost = async (req, res, next) => {
     try {
         const { id } = req.params
-
-        const post = await Post.findOne({ _id: id, owner: req.user.userId })
+        const {userId} = req.user
+        
+        const post = await Post.findOne({ _id: id, owner: userId })
         if (!post) {
             return res.status(400).json({ message: 'No post found' })
         }
@@ -92,7 +121,7 @@ const deletePost = async (req, res, next) => {
 // create comment for post
 const createComment = async (req, res, next) => {
     try {
-        const { postId } = req.params
+        const postId = req.params.id
         const { userId } = req.user
 
         const post = await Post.findById(postId)
@@ -100,16 +129,19 @@ const createComment = async (req, res, next) => {
             return res.status(404).json({ message: 'Post not found' })
         }
 
-        const { content } = req.body
-        if (!content) {
-            return res.status(400).json({ message: 'Comment content required' })
+        const {error, value} = commentBodySchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({message: error.details[0].message})
         }
+
+        const {content} = value
+
+    
 
         const comment = new Comment({ content, owner: userId, post: postId })
         comment.save()
 
         res.json(comment)
-
     } catch (err) {
         next(err)
     }
@@ -118,14 +150,14 @@ const createComment = async (req, res, next) => {
 // get comments from post
 const getComments = async (req, res, next) => {
     try {
-        const { postId } = req.params
+        const postId = req.params.id
 
         const post = await Post.findById(postId)
         if (!post) {
             return res.status(404).json({ message: 'Post not found' })
         }
 
-        const comments = await Comment.find({ post: postId }).populate('owner', 'email').populate('post', 'title content')
+        const comments = await Comment.find({ post: postId }).populate('post', 'content')
 
         res.json(comments)
     } catch (err) {
@@ -140,5 +172,6 @@ module.exports = {
     updatePost,
     deletePost,
     createComment,
-    getComments
+    getComments,
+    idParamSchema
 }
