@@ -96,5 +96,6 @@ I’m actively learning and always happy for feedback! If you find any bugs 🐛
 
 ---
 # Thank you for visiting 
-
-<img src='https://media.tenor.com/G4LDTapZqRQAAAAi/thanks-bro.gif' align='center'>
+<div  align='center'>
+<img src='https://media.tenor.com/G4LDTapZqRQAAAAi/thanks-bro.gif'>
+</div>
